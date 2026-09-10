@@ -24,6 +24,21 @@ async function main() {
     res.status(404).json({ status: 'error', message: 'Page Not Found' });
   });
 
+  app.use((err, req, res, next) => {
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: 'error',
+        message: err.message
+      });
+    }
+
+    console.error(err);
+    res.status(500).json({
+      status: 'failed',
+      message: '伺服器發生錯誤，請稍後再試'
+    });
+  });
+
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => console.log(`伺服器啟動中：http://localhost:${PORT}`));
 }
