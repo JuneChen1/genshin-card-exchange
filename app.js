@@ -15,6 +15,7 @@ async function main() {
   const cors = require('cors');
   const healthRouter = require('./routes/health');
   const authRouter = require('./routes/auth');
+  const cardRouter = require('./routes/cards');
 
   const app = express();
 
@@ -24,6 +25,7 @@ async function main() {
 
   app.use('/health', healthRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/cards', cardRouter);
 
   app.use((req, res) => {
     res.status(404).json({ status: 'error', message: 'Page Not Found' });
