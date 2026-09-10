@@ -1,0 +1,96 @@
+const bcrypt = require('bcrypt');
+const {
+  isValidString,
+  isValidEmail,
+  isValidPassword
+} = require('../utils/validUtils');
+const appError = require('../utils/appError');
+const { dataSource } = require('../db/data-source');
+
+const userController = {
+  getMe(req, res, next) {
+    try {
+      const { id, name, contact_info, email } = req.user;
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user: { id, name, contact_info, email }
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async updateMe(req, res, next) {
+    try {
+      const { username, email, contact_info } = req.body;
+
+      if (username !== undefined) return next(appError(400, '帳號不可修改'));
+
+      if (email !== undefined && email !== '' && !isValidEmail(email))
+        return next(appError(400, '欄位未填寫正確'));
+
+      if (
+        contact_info !== undefined &&
+        contact_info !== '' &&
+        (!isValidString(contact_info) || contact_info.trim().length > 255)
+      )
+        return next(appError(400, '欄位未填寫正確'));
+
+      if (email === undefined && contact_info === undefined)
+        return next(appError(400, '沒有可更新的欄位'));
+
+      const updateData = {};
+      if (email !== undefined) updateData.email = email.trim() || null;
+      if (contact_info !== undefined)
+        updateData.contact_info = contact_info.trim() || null;
+
+      const userRepo = dataSource.getRepository('Users');
+      const user = await userRepo.save({
+        ...req.user,
+        ...updateData
+      });
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user: {
+            id: user.id,
+            name: user.name,
+            contact_info: user.contact_info,
+            email: user.email
+          }
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async updatePassword(req, res, next) {
+    try {
+      const { old_password, new_password } = req.body;
+
+      if (!isValidString(old_password) || !isValidPassword(new_password))
+        return next(appError(400, '欄位未填寫正確'));
+
+      const isMatch = await bcrypt.compare(old_password, req.user.password);
+      if (!isMatch) return next(appError(400, '舊密碼錯誤'));
+
+      const hashedPassword = await bcrypt.hash(new_password, 10);
+      const userRepo = dataSource.getRepository('Users');
+      await userRepo.save({ ...req.user, password: hashedPassword });
+
+      res.status(200).json({
+        status: 'success',
+        message: '密碼更新成功'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+};
+
+module.exports = userController;
