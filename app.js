@@ -13,12 +13,15 @@ async function main() {
 
   const express = require('express');
   const cors = require('cors');
+  const authRouter = require('./routes/auth');
 
   const app = express();
 
   app.use(cors());
   app.use(express.json());
   app.use(express.static('public'));
+
+  app.use('/api/auth', authRouter);
 
   app.use((req, res) => {
     res.status(404).json({ status: 'error', message: 'Page Not Found' });
