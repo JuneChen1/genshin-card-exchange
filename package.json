@@ -1,5 +1,5 @@
 {
-  "name": "genshin-card-exchange",
+  "name": "luna-card-exchange",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -14,16 +14,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JuneChen1/genshin-card-exchange.git"
+    "url": "git+https://github.com/JuneChen1/luna-card-exchange.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/JuneChen1/genshin-card-exchange/issues"
+    "url": "https://github.com/JuneChen1/luna-card-exchange/issues"
   },
-  "homepage": "https://github.com/JuneChen1/genshin-card-exchange#readme",
+  "homepage": "https://github.com/JuneChen1/luna-card-exchange#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
