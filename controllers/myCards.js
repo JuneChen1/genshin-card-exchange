@@ -3,6 +3,38 @@ const appError = require('../utils/appError');
 const { dataSource } = require('../db/data-source');
 
 const myCardController = {
+  async getUidSummary(req, res, next) {
+    try {
+      const linkRepo = dataSource.getRepository('UserCards');
+      const result = await linkRepo.find({
+        where: { user: { id: req.user.id } },
+        relations: { card: true },
+        order: { genshin_uid: 'ASC' }
+      });
+
+      const summaryByUid = {};
+      result.forEach((item) => {
+        if (!summaryByUid[item.genshin_uid])
+          summaryByUid[item.genshin_uid] = {
+            genshin_uid: item.genshin_uid,
+            offered: [],
+            wanted: []
+          };
+
+        summaryByUid[item.genshin_uid][item.status].push({
+          id: item.card.id,
+          name: item.card.name
+        });
+      });
+
+      res.status(200).json({
+        status: 'success',
+        data: Object.values(summaryByUid)
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   async getMyCards(req, res, next) {
     const { uid } = req.query;
     if (!isValidGenshinUid(uid)) return next(appError(400, 'uid 格式錯誤'));
