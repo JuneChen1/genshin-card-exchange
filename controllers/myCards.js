@@ -102,6 +102,28 @@ const myCardController = {
     } catch (error) {
       next(error);
     }
+  },
+  async deleteUidCards(req, res, next) {
+    const { uid } = req.query;
+    if (!isValidGenshinUid(uid)) return next(appError(400, 'uid 格式錯誤'));
+
+    try {
+      const linkRepo = dataSource.getRepository('UserCards');
+      const deleteData = await linkRepo.find({
+        where: { genshin_uid: uid, user: { id: req.user.id } }
+      });
+
+      if (deleteData.length === 0) return next(appError(400, '查無資料'));
+
+      await linkRepo.remove(deleteData);
+
+      res.status(200).json({
+        status: 'success',
+        data: null
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 };
 

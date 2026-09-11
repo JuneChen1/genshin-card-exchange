@@ -6,5 +6,6 @@ const router = express.Router();
 router.get('/uids', isAuth, myCardController.getUidSummary);
 router.get('/', isAuth, myCardController.getMyCards);
 router.post('/', isAuth, myCardController.updateCards);
+router.delete('/', isAuth, myCardController.deleteUidCards);
 
 module.exports = router;
