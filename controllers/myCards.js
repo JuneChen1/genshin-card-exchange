@@ -1,4 +1,4 @@
-const { isValidGenshinUid } = require('../utils/validUtils');
+const { isValidGenshinUid, isValidCardsList } = require('../utils/validUtils');
 const appError = require('../utils/appError');
 const { dataSource } = require('../db/data-source');
 
@@ -21,10 +21,7 @@ const myCardController = {
             wanted: []
           };
 
-        summaryByUid[item.genshin_uid][item.status].push({
-          id: item.card.id,
-          name: item.card.name
-        });
+        summaryByUid[item.genshin_uid][item.status].push(item.card.id);
       });
 
       res.status(200).json({
@@ -57,10 +54,11 @@ const myCardController = {
     const { genshinUid, offered, wanted } = req.body;
     if (
       !isValidGenshinUid(genshinUid) ||
-      !Array.isArray(offered) ||
-      !Array.isArray(wanted)
+      !isValidCardsList(offered) ||
+      !isValidCardsList(wanted)
     )
       return next(appError(400, '欄位未填寫正確'));
+
     if (offered.length === 0 && wanted.length === 0)
       return next(appError(400, '沒有可更新的欄位'));
 
