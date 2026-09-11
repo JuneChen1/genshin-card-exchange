@@ -18,12 +18,14 @@ async function main() {
   const cardRouter = require('./routes/cards');
   const userRouter = require('./routes/users');
   const myCardRouter = require('./routes/myCards');
+  const { globalLimiter } = require('./middlewares/limiter');
 
   const app = express();
 
   app.use(cors());
   app.use(express.json());
   app.use(express.static('public'));
+  app.use(globalLimiter);
 
   app.use('/health', healthRouter);
   app.use('/api/auth', authRouter);
