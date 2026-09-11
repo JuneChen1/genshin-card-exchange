@@ -39,6 +39,7 @@ const authController = {
         }
       });
     } catch (error) {
+      if (error.code === '23505') return next(appError(409, '名字已被使用'));
       next(error);
     }
   },
