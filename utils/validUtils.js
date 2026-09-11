@@ -27,5 +27,13 @@ module.exports = {
     const uidRegex = /^(6\d{8}|7\d{8}|9\d{8}|18\d{8}|8\d{8})$/;
 
     return typeof uid === 'string' && uidRegex.test(uid.trim());
+  },
+  isValidCardsList(list) {
+    return (
+      Array.isArray(list) &&
+      list.every(
+        (cardId) => Number.isInteger(cardId) && cardId >= 0 && cardId <= 21
+      )
+    );
   }
 };
