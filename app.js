@@ -17,6 +17,7 @@ async function main() {
   const authRouter = require('./routes/auth');
   const cardRouter = require('./routes/cards');
   const userRouter = require('./routes/users');
+  const myCardRouter = require('./routes/myCards');
 
   const app = express();
 
@@ -28,6 +29,7 @@ async function main() {
   app.use('/api/auth', authRouter);
   app.use('/api/cards', cardRouter);
   app.use('/api/users', userRouter);
+  app.use('/api/my-cards', myCardRouter);
 
   app.use((req, res) => {
     res.status(404).json({ status: 'error', message: 'Page Not Found' });
