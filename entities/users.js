@@ -28,7 +28,8 @@ module.exports = new EntitySchema({
     email: {
       type: 'varchar',
       length: 100,
-      nullable: true
+      nullable: true,
+      unique: true
     },
     role: {
       type: 'varchar',
