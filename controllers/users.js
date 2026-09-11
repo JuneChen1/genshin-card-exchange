@@ -6,6 +6,7 @@ const {
 } = require('../utils/validUtils');
 const appError = require('../utils/appError');
 const { dataSource } = require('../db/data-source');
+const { Not } = require('typeorm');
 
 const userController = {
   getMe(req, res, next) {
@@ -42,12 +43,22 @@ const userController = {
       if (email === undefined && contact_info === undefined)
         return next(appError(400, '沒有可更新的欄位'));
 
+      const userRepo = dataSource.getRepository('Users');
       const updateData = {};
-      if (email !== undefined) updateData.email = email.trim() || null;
+      if (email !== undefined) {
+        if (email !== '') {
+          const existing = await userRepo.findOneBy({
+            email: email.trim().toLowerCase(),
+            id: Not(req.user.id)
+          });
+          if (existing) return next(appError(400, 'email 已被使用'));
+        }
+
+        updateData.email = email.trim().toLowerCase() || null;
+      }
       if (contact_info !== undefined)
         updateData.contact_info = contact_info.trim() || null;
 
-      const userRepo = dataSource.getRepository('Users');
       const user = await userRepo.save({
         ...req.user,
         ...updateData
