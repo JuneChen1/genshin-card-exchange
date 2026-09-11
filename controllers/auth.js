@@ -7,13 +7,16 @@ const { dataSource } = require('../db/data-source');
 const authController = {
   async register(req, res, next) {
     try {
-      const { username, password, contact_info } = req.body;
+      const { username, password, confirm_password } = req.body;
       if (
         !isValidString(username) ||
         !isValidPassword(password) ||
-        (contact_info && !isValidString(contact_info))
+        !isValidPassword(confirm_password)
       )
         return next(appError(400, '欄位未填寫正確'));
+
+      if (password !== confirm_password)
+        return next(appError(400, '兩次輸入的密碼不一致'));
 
       const userRepo = dataSource.getRepository('Users');
       const existing = await userRepo.findOneBy({
@@ -25,7 +28,6 @@ const authController = {
       const user = await userRepo.save({
         name: username.trim(),
         password: hashedPassword,
-        contact_info: contact_info ? contact_info.trim() : null,
         role: 'USER'
       });
 
