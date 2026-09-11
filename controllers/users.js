@@ -71,10 +71,17 @@ const userController = {
 
   async updatePassword(req, res, next) {
     try {
-      const { old_password, new_password } = req.body;
+      const { old_password, new_password, confirm_password } = req.body;
 
-      if (!isValidString(old_password) || !isValidPassword(new_password))
+      if (
+        !isValidString(old_password) ||
+        !isValidPassword(new_password) ||
+        !isValidPassword(confirm_password)
+      )
         return next(appError(400, '欄位未填寫正確'));
+
+      if (new_password !== confirm_password)
+        return next(appError(400, '兩次輸入的新密碼不一致'));
 
       const isMatch = await bcrypt.compare(old_password, req.user.password);
       if (!isMatch) return next(appError(400, '舊密碼錯誤'));
