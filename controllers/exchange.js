@@ -69,6 +69,7 @@ const cardController = {
         const key = `${item.user_name}_${item.genshin_uid}`;
         if (!groupe[key]) {
           groupe[key] = {
+            user_id: item.user_id,
             user_name: item.user_name,
             genshin_uid: item.genshin_uid,
             offered_card_ids: [],
