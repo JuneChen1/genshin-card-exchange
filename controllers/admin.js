@@ -2,7 +2,8 @@ const { ILike } = require('typeorm');
 const {
   isValidString,
   isPositiveInteger,
-  isValidUUID
+  isValidUUID,
+  isValidGenshinUid
 } = require('../utils/validUtils');
 const appError = require('../utils/appError');
 const { dataSource } = require('../db/data-source');
@@ -130,6 +131,30 @@ const adminController = {
         data: {
           user: { id: user.id, name: user.name, role: 'ADMIN' }
         }
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async forceDeleteUidCards(req, res, next) {
+    try {
+      const { id, genshinUid } = req.params;
+      if (!isValidUUID(id) || !isValidGenshinUid(genshinUid))
+        return next(appError(400, '欄位未填寫正確'));
+
+      const linkRepo = dataSource.getRepository('UserCards');
+      const deleteData = await linkRepo.find({
+        where: { genshin_uid: genshinUid, user: { id } }
+      });
+
+      if (deleteData.length === 0) return next(appError(404, '查無資料'));
+
+      await linkRepo.remove(deleteData);
+
+      res.status(200).json({
+        status: 'success',
+        data: null
       });
     } catch (error) {
       next(error);
