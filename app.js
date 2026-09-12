@@ -19,6 +19,7 @@ async function main() {
   const userRouter = require('./routes/users');
   const myCardRouter = require('./routes/myCards');
   const exchangeRouter = require('./routes/exchange');
+  const adminRouter = require('./routes/admin');
   const { globalLimiter } = require('./middlewares/limiter');
 
   const app = express();
@@ -34,6 +35,7 @@ async function main() {
   app.use('/api/users', userRouter);
   app.use('/api/my-cards', myCardRouter);
   app.use('/api/exchange', exchangeRouter);
+  app.use('/api/admin', adminRouter);
 
   app.use((req, res) => {
     res.status(404).json({ status: 'error', message: 'Page Not Found' });
