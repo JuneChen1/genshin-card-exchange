@@ -24,7 +24,20 @@ async function main() {
 
   const app = express();
 
-  app.use(cors());
+  const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  app.use(
+    cors({
+      origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin))
+          return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
+      }
+    })
+  );
   app.use(express.json());
   app.use(express.static('public'));
   app.use(globalLimiter);
