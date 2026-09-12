@@ -6,5 +6,7 @@ const router = express.Router();
 router.use(isAdmin);
 
 router.get('/users', adminController.getUsers);
+router.patch('/users/:id/ban', adminController.banUser);
+router.patch('/users/:id/unban', adminController.unbanUser);
 
 module.exports = router;

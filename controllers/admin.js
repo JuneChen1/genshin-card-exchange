@@ -1,5 +1,9 @@
 const { ILike } = require('typeorm');
-const { isValidString, isPositiveInteger } = require('../utils/validUtils');
+const {
+  isValidString,
+  isPositiveInteger,
+  isValidUUID
+} = require('../utils/validUtils');
 const appError = require('../utils/appError');
 const { dataSource } = require('../db/data-source');
 
@@ -54,6 +58,52 @@ const adminController = {
             total,
             total_pages: Math.ceil(total / limitNum)
           }
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async banUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      if (!isValidUUID(id)) return next(appError(400, '欄位未填寫正確'));
+
+      if (id === req.user.id) return next(appError(400, '無法停權自己的帳號'));
+
+      const userRepo = dataSource.getRepository('Users');
+      const user = await userRepo.findOneBy({ id });
+      if (!user) return next(appError(404, '找不到使用者'));
+
+      await userRepo.save({ ...user, is_banned: true });
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user: { id: user.id, name: user.name, is_banned: true }
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async unbanUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      if (!isValidUUID(id)) return next(appError(400, '欄位未填寫正確'));
+
+      const userRepo = dataSource.getRepository('Users');
+      const user = await userRepo.findOneBy({ id });
+      if (!user) return next(appError(404, '找不到使用者'));
+
+      await userRepo.save({ ...user, is_banned: false });
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user: { id: user.id, name: user.name, is_banned: false }
         }
       });
     } catch (error) {
