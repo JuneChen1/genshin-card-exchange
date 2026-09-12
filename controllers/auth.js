@@ -73,6 +73,8 @@ const authController = {
         name: username.trim()
       });
       if (!user) return next(appError(400, '使用者不存在或密碼輸入錯誤'));
+      if (user.is_banned === true)
+        return next(appError(403, '您的帳號已被停權，如有疑問請聯絡管理者'));
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return next(appError(400, '使用者不存在或密碼輸入錯誤'));

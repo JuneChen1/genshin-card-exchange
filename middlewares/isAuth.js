@@ -14,6 +14,8 @@ async function isAuth(req, res, next) {
     const userRepo = dataSource.getRepository('Users');
     const user = await userRepo.findOneBy({ id: decoded.id });
     if (!user) return next(appError(401, '無效的 token'));
+    if (user.is_banned === true)
+      return next(appError(403, '您的帳號已被停權，如有疑問請聯絡管理者'));
 
     req.user = user;
     next();
