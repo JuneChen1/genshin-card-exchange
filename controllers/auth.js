@@ -26,6 +26,7 @@ const authController = {
       const { username, password, confirm_password } = req.body;
       if (
         !isValidString(username) ||
+        username.trim().length > 50 ||
         !isValidPassword(password) ||
         !isValidPassword(confirm_password)
       )
