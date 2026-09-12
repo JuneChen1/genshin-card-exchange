@@ -139,7 +139,11 @@ const adminController = {
 
   async forceDeleteUidCards(req, res, next) {
     try {
-      const { id, genshinUid } = req.params;
+      const { id } = req.params;
+      const genshinUid =
+        typeof req.params.genshinUid === 'string'
+          ? req.params.genshinUid.trim()
+          : req.params.genshinUid;
       if (!isValidUUID(id) || !isValidGenshinUid(genshinUid))
         return next(appError(400, '欄位未填寫正確'));
 

@@ -33,7 +33,8 @@ const myCardController = {
     }
   },
   async getMyCards(req, res, next) {
-    const { uid } = req.query;
+    const uid =
+      typeof req.query.uid === 'string' ? req.query.uid.trim() : req.query.uid;
     if (!isValidGenshinUid(uid)) return next(appError(400, 'uid 格式錯誤'));
     try {
       const linkRepo = dataSource.getRepository('UserCards');
@@ -51,7 +52,11 @@ const myCardController = {
     }
   },
   async updateCards(req, res, next) {
-    const { genshinUid, offered, wanted } = req.body;
+    const { offered, wanted } = req.body;
+    const genshinUid =
+      typeof req.body.genshinUid === 'string'
+        ? req.body.genshinUid.trim()
+        : req.body.genshinUid;
     if (
       !isValidGenshinUid(genshinUid) ||
       !isValidCardsList(offered) ||
@@ -104,7 +109,8 @@ const myCardController = {
     }
   },
   async deleteUidCards(req, res, next) {
-    const { uid } = req.query;
+    const uid =
+      typeof req.query.uid === 'string' ? req.query.uid.trim() : req.query.uid;
     if (!isValidGenshinUid(uid)) return next(appError(400, 'uid 格式錯誤'));
 
     try {
