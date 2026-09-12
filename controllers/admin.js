@@ -109,6 +109,31 @@ const adminController = {
     } catch (error) {
       next(error);
     }
+  },
+
+  async promoteUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      if (!isValidUUID(id)) return next(appError(400, '欄位未填寫正確'));
+
+      const userRepo = dataSource.getRepository('Users');
+      const user = await userRepo.findOneBy({ id });
+      if (!user) return next(appError(404, '找不到使用者'));
+
+      if (user.role === 'ADMIN')
+        return next(appError(400, '此使用者已經是管理者'));
+
+      await userRepo.save({ ...user, role: 'ADMIN' });
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          user: { id: user.id, name: user.name, role: 'ADMIN' }
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 };
 
